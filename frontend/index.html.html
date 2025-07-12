@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Skill Swap Platform</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom hand-drawn/sketch style approximation */
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      background: #fff;
+      color: #111;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+    /* Sketch-like border */
+    .sketch-border {
+      border: 2px solid black;
+      border-radius: 1rem;
+      box-shadow: 1px 1px 0 0 black inset;
+      padding: 1rem;
+      background: #fefefe;
+      min-height: 400px;
+    }
+    /* Buttons with hand drawn vibe */
+    button {
+      border: 2px solid #00acf0;
+      background-color: #dcedf7;
+      color: #08638c;
+      font-weight: 600;
+      border-radius: 0.4rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      box-shadow: inset 0 0 0 1px #0092d1;
+      transition:
+        background-color 0.3s ease,
+        color 0.3s ease,
+        box-shadow 0.3s ease;
+    }
+    button:hover {
+      background-color: #aaddff;
+      color: #003b5c;
+      box-shadow: inset 0 0 5px 1px #003b5c;
+    }
+    /* Input fields */
+    input[type="text"], input[type="email"], input[type="password"], select, textarea {
+      border: 2px solid #222;
+      border-radius: 0.2rem;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 0.3rem 0.5rem;
+      margin-top: 0.2rem;
+      margin-bottom: 0.6rem;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background: #fff url("data:image/svg+xml;charset=US-ASCII,%3Csvg fill='none' stroke='%23222' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 0.5rem center;
+      background-size: 1rem;
+      padding-right: 2rem;
+    }
+    /* Profile photo style */
+    .profile-photo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid black;
+      background-color: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: bold;
+      user-select: none;
+      color: #444;
+      margin-right: 1rem;
+      flex-shrink: 0;
+    }
+    /* Card container style */
+    .user-card {
+      border: 2px solid black;
+      margin: 8px 0;
+      padding: 1rem 1.2rem;
+      border-radius: 1rem;
+      background: #fafafa;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 1px 1px 0 0 black inset;
+      min-height: 80px;
+    }
+    /* Skill tags style */
+    .skill-tag {
+      border: 1.5px solid #111;
+      border-radius: 0.6rem;
+      display: inline-block;
+      padding: 0.12rem 0.6rem;
+      margin: 0 0.15rem 0.15rem 0;
+      font-size: 0.7rem;
+      user-select: none;
+      background-color: #eee;
+    }
+    /* Blue links mimic hand-drawn underline */
+    a, .blue-link {
+      color: #1a90f0;
+      text-decoration-line: underline;
+      text-underline-offset: 0.15rem;
+      cursor: pointer;
+      user-select: none;
+      font-size: 0.8rem;
+      transition: color 0.3s ease;
+    }
+    a:hover, .blue-link:hover {
+      color: #0d5ea3;
+    }
+    /* Header style */
+    header {
+      border-bottom: 2px solid black;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    /* Pagination style */
+    .pagination {
+      margin-top: 1rem;
+      text-align: center;
+      user-select: none;
+    }
+    .pagination span, .pagination button {
+      cursor: pointer;
+      padding: 0.2rem 0.5rem;
+      margin: 0 0.2rem;
+      border: 1.6px solid black;
+      border-radius: 0.5rem;
+      font-weight: normal;
+      font-size: 0.9rem;
+      background-color: #fff;
+      box-shadow: inset 1px 1px 0 0 black;
+      user-select: none;
+      transition: background-color 0.2s ease;
+    }
+    .pagination button:hover {
+      background-color: #def1ff;
+    }
+    .pagination .active-page {
+      font-weight: 700;
+      background-color: #bbdefb;
+      border-color: #1169b4;
+      box-shadow: none;
+    }
+    /* Form container max width for mobile */
+    .form-container {
+      max-width: 320px;
+      margin: auto;
+    }
+    /* Multi-line textarea styling */
+    textarea {
+      min-height: 80px;
+      resize: vertical;
+    }
+    /* Profile photo large circle */
+    .profile-photo-lg {
+      width: 130px;
+      height: 130px;
+      margin-bottom: 1rem;
+      border: 2px solid black;
+    }
+    /* Labels styling */
+    label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    /* Layout wrapper for screen containers */
+    .screen-wrapper {
+      max-width: 600px;
+      margin: 1.2rem auto;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+    }
+    /* Top bar style */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid black;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      user-select: none;
+      font-size: 1.1rem;
+    }
+    /* Right-aligned menu buttons */
+    .top-bar .right-menu {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .top-bar button {
+      font-size: 0.85rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.8rem;
+      font-weight: 600;
+    }
+    /* Profile photo in top bar */
+    .profile-photo-topbar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1.6px solid black;
+      background-color: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-weight: 700;
+      user-select: none;
+      cursor: pointer;
+    }
+    /* Skill tags smaller for some cases */
+    .skill-tag-small {
+      font-size: 0.55rem;
+      padding: 0.1rem 0.4rem;
+      margin-right: 0.3rem;
+      margin-bottom: 0.2rem;
+    }
+    /* Status small pills */
+    .status-pill {
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 0.15rem 0.5rem;
+      border-radius: 12px;
+      user-select: none;
+    }
+    .status-accept {
+      color: green;
+    }
+    .status-reject {
+      color: red;
+    }
+    .status-pending {
+      color: #d28500; /* orange-ish */
+    }
+    /* Small links and underline */
+    .small-link {
+      font-size: 0.75rem;
+      text-decoration: underline;
+      color: #1a90f0;
+      cursor: pointer;
+      user-select: none;
+      margin-top: 0.25rem;
+      display: inline-block;
+    }
+    .small-link:hover {
+      color: #0b65aa;
+    }
+    /* Responsive tweaks */
+    @media (max-width: 640px) {
+      .screen-wrapper {
+        margin: 1rem 0.5rem;
+      }
+      .user-card {
+        flex-direction: column;
+        align-items: flex-start;
+        min-height: auto;
+      }
+      .user-card > div:last-child {
+        margin-top: 0.6rem;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+      }
+      .top-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        font-size: 1rem;
+      }
+      .top-bar .right-menu {
+        gap: 0.3rem;
+      }
+      .pagination span, .pagination button {
+        padding: 0.3rem 0.4rem;
+        margin: 0 0.1rem;
+        font-size: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Main container where we dynamically switch screens -->
+<div id="app" class="screen-wrapper shadow-lg rounded-lg">
+
+</div>
+
+<script>
+  (() => {
+    // Base URL for your backend API
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    // Store login state and requests
+    let loggedInUser = null;
+    let requests = []; // stores request objects { requestorId, requestedId, status, message, skillOffered, skillWanted }
+    let allUsers = []; // To store users fetched from backend
+
+    // Current pagination page
+    let currentPage = 1;
+    const pageSize = 3;
+
+    // Current filter for homepage availability (not functional in this mockup)
+    let currentFilter = "";
+
+    // Currently selected user for requests or profile
+    let selectedUser = null;
+
+    // -- API Calls --
+    async function fetchUsers() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/users`);
+        if (!response.ok) throw new Error('Failed to fetch users');
+        allUsers = await response.json();
+        return allUsers;
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        alert("Failed to load users. Please try again later.");
+        return [];
+      }
+    }
+
+    async function loginUser(email, password) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Login failed');
+        }
+        const userData = await response.json();
+        loggedInUser = userData; // Backend will return the user object
+        return true;
+      } catch (error) {
+        console.error("Login error:", error);
+        alert(error.message);
+        return false;
+      }
+    }
+
+    async function sendSwapRequest(requestData) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/requests`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${loggedInUser.id}` // Simple auth for demo
+          },
+          body: JSON.stringify(requestData),
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to send request');
+        }
+        const newRequest = await response.json();
+        requests.push(newRequest); // Add to local state
+        return true;
+      } catch (error) {
+        console.error("Send request error:", error);
+        alert(error.message);
+        return false;
+      }
+    }
+
+    async function fetchUserRequests() {
+      if (!loggedInUser) return [];
+      try {
+        const response = await fetch(`${API_BASE_URL}/requests/${loggedInUser.id}`, {
+          headers: {
+            'Authorization': `Bearer ${loggedInUser.id}` // Simple auth for demo
+          }
+        });
+        if (!response.ok) throw new Error('Failed to fetch requests');
+        requests = await response.json();
+        return requests;
+      } catch (error) {
+        console.error("Error fetching requests:", error);
+        alert("Failed to load swap requests.");
+        return [];
+      }
+    }
+
+    // -- Helpers --
+    function el(tag, attrs = {}, children = []) {
+      const e = document.createElement(tag);
+      for (const [key, val] of Object.entries(attrs)) {
+        if (key === "class") {
+          e.className = val;
+        } else if (key.startsWith("on") && typeof val === "function") {
+          e.addEventListener(key.substring(2).toLowerCase(), val);
+        } else {
+          e.setAttribute(key, val);
+        }
+      }
+      children.forEach(child => {
+        if (typeof child === "string") {
+          e.appendChild(document.createTextNode(child));
+        } else if (child instanceof Node) {
+          e.appendChild(child);
+        }
+      });
+      return e;
+    }
+
+    // Create a profile photo circle with initials
+    function createProfilePhoto(initials, size = 60) {
+      const div = el("div", {
+        class: size > 90 ? "profile-photo-lg" : "profile-photo",
+        title: "Profile Photo"
+      }, [initials]);
+      return div;
+    }
+
+    // Create skill tags
+    function createSkillTags(skills) {
+      return skills.map(skill => el("span", {class: "skill-tag"}, [skill]));
+    }
+
+    // Check if user has a request made from loggedInUser (local state check)
+    function getRequestStatus(requestedUserId) {
+      if (!loggedInUser) return null;
+      const req = requests.find(r => r.requestorId === loggedInUser.id && r.requestedId === requestedUserId);
+      return req ? req.status : null;
+    }
+
+    // Pagination control
+    function renderPagination(totalItems) {
+      const totalPages = Math.ceil(totalItems/pageSize);
+      if (totalPages <= 1) return null;
+      const container = el("div", {class: "pagination"});
+
+      // Support previous button
+      const prevBtn = el("button", {
+        onClick: () => {
+          if (currentPage > 1) {
+            currentPage--;
+            renderHomePage();
+          }
+        },
+        title: "Previous page",
+        type: "button"
+      }, ["<"]);
+
+      container.appendChild(prevBtn);
+
+      for(let i = 1; i <= totalPages; i++) {
+        const pageBtn = el("button", {
+          onClick: () => {
+            if (currentPage !== i) {
+              currentPage = i;
+              renderHomePage();
+            }
+          },
+          type: "button",
+          class: i === currentPage ? "active-page" : ""
+        }, [String(i)]);
+        container.appendChild(pageBtn);
+      }
+
+      // Support next button
+      const nextBtn = el("button", {
+        onClick: () => {
+          if (currentPage < totalPages) {
+            currentPage++;
+            renderHomePage();
+          }
+        },
+        title: "Next page",
+        type: "button"
+      }, [">"]);
+
+      container.appendChild(nextBtn);
+
+      return container;
+    }
+
+    // -- Screens --
+
+    // Screen 1: Home Page (public profiles list)
+    async function renderHomePage() {
+      await fetchUsers(); // Fetch users every time home page is rendered
+      if (loggedInUser) {
+        await fetchUserRequests(); // Fetch requests if logged in
+      }
+
+      const container = el("div", {class: "sketch-border"});
+
+      // Top bar
+      const topBar = el("header", {class: "top-bar"}, [
+        el("div", {}, ["Skill Swap Platform"]),
+        el("div", {class: "right-menu"}, [
+          loggedInUser
+            ? el("button", {onClick: () => renderUserProfile(loggedInUser)}, ["Profile"])
+            : el("button", {onClick: () => renderLoginPage()}, ["Login"]),
+          loggedInUser ? createProfilePhoto(loggedInUser.imgPlaceholderInitials, 38) : null,
+          loggedInUser ? el("button", {onClick: () => { loggedInUser = null; requests = []; renderHomePage(); }}, ["Logout"]) : null
+        ].filter(Boolean))
+      ]);
+      container.appendChild(topBar);
+
+      // Filter & search
+      const form = el("form", {class: "flex items-center gap-2 mb-4", onSubmit: e => {
+        e.preventDefault();
+        // Filter is not functional, just UI mimic
+      }}, [
+        el("select", {
+          "aria-label": "Availability Filter",
+          style:"min-width: 7rem",
+          onChange: e => {
+            currentFilter = e.target.value;
+            // Not functional in demo; would filter
+          }
+        }, [
+          el("option", {value: ""}, ["Availability"]),
+          el("option", {value: "available"}, ["Available"]),
+          el("option", {value: "busy"}, ["Busy"]),
+          el("option", {value: "weekends"}, ["Weekends"])
+        ]),
+        el("input", {type: "text", placeholder: "search", "aria-label": "Search profiles"}),
+        el("button", {type: "submit"}, ["Search"])
+      ]);
+      container.appendChild(form);
+
+      // List users for current page, visibility public only
+      const start = (currentPage - 1) * pageSize;
+      const visibleUsers = allUsers.filter(u => u.profileVisibility === "Public");
+
+      const listContainer = el("div", {});
+      if (visibleUsers.length === 0) {
+        listContainer.appendChild(el("p", {style: "text-align: center; color: #666;"}, ["No public profiles available."]));
+      } else {
+        visibleUsers.slice(start, start + pageSize).forEach(user => {
+          // Profile card
+          const card = el("div", {class: "user-card"});
+          const leftContent = el("div", {class: "flex items-center"}, [
+            createProfilePhoto(user.imgPlaceholderInitials),
+            el("div", {}, [
+              el("div", {style: "font-weight: 700;"}, [user.name]),
+              el("div", {}, [
+                el("span", {class: "skill-tag-small"}, ["skills offered:"]),
+                ...user.skillsOffered.map(s => el("span", {class: "skill-tag-small"}, [s]))
+              ]),
+              el("div", {}, [
+                el("span", {class: "skill-tag-small"}, ["skills wanted:"]),
+                ...user.skillsWanted.map(s => el("span", {class: "skill-tag-small"}, [s]))
+              ]),
+            ]),
+          ]);
+
+          const requestStatus = getRequestStatus(user.id);
+          const rightContent = el("div", {class: "flex flex-col items-end select-none"}, [
+            requestStatus
+              ? el("div", {class: `status-pill status-${requestStatus.toLowerCase()}`}, [requestStatus])
+              : el("button", {
+                  onClick: () => {
+                    selectedUser = user;
+                    if (!loggedInUser) {
+                      alert("You must login to request.");
+                      renderLoginPage();
+                    } else {
+                      renderRequestForm(user);
+                    }
+                  },
+                  type: "button",
+                  "aria-label": `Request skill swap with ${user.name}`
+                }, ["Request"]),
+            el("div", {
+              style: "margin-top: 0.3rem; font-size: 0.75rem; color: #666;"
+            }, [
+              `rating ${user.rating.toFixed(1)}`,
+              el("br"),
+              `${user.feedbackCount} feedback`
+            ])
+          ]);
+
+          card.appendChild(leftContent);
+          card.appendChild(rightContent);
+          listContainer.appendChild(card);
+        });
+      }
+
+
+      container.appendChild(listContainer);
+
+      // Pagination
+      const paginationEl = renderPagination(visibleUsers.length);
+      if (paginationEl) container.appendChild(paginationEl);
+
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+      app.appendChild(container);
+    }
+
+    // Screen 2: Login page
+    function renderLoginPage() {
+      const container = el("div", {class: "sketch-border form-container"});
+
+      // Top bar
+      const topBar = el("header", {class: "top-bar"}, [
+        el("div", {}, ["Skill Swap Platform"]),
+        el("button", {
+          onClick: () => renderHomePage(),
+          type: "button"
+        }, ["Home"])
+      ]);
+      container.appendChild(topBar);
+
+      // Login form
+      const form = el("form", {onSubmit: async e => {
+        e.preventDefault();
+        const email = e.target.email.value.trim();
+        const password = e.target.password.value;
+
+        if (!email || !password) {
+          alert("Please fill in email and password");
+          return;
+        }
+
+        const success = await loginUser(email, password);
+        if (success) {
+          renderHomePage();
+        }
+      }}, [
+        el("div", {}, [
+          el("label", {for: "email"}, ["Email"]),
+          el("input", {id: "email", name: "email", type: "email", required: true, value: "marc.demo@example.com"}),
+        ]),
+        el("div", {}, [
+          el("label", {for: "password"}, ["Password"]),
+          el("input", {id: "password", name: "password", type: "password", required: true, value: "password123"}),
+        ]),
+        el("div", {style: "margin-top: 1rem; text-align: center;"}, [
+          el("button", {type: "submit"}, ["Login"])
+        ]),
+        el("a", {
+          href: "#",
+          class: "small-link",
+          onClick: (e) => {
+            e.preventDefault();
+            alert("Password recovery is not implemented in this demo.");
+          }
+        }, ["Forget username/password"])
+      ]);
+      container.appendChild(form);
+
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+      app.appendChild(container);
+    }
+
+    // Screen 3: User profile page
+    function renderUserProfile(user) {
+      selectedUser = user;
+      const container = el("div", {class: "sketch-border form-container"});
+
+      // Top bar
+      const topBar = el("header", {class: "top-bar"}, [
+        el("div", {}, ["Skill Swap Platform"]),
+        el("div", {class: "right-menu"}, [
+          el("button", {
+            onClick: () => renderRequestList(),
+            type: "button"
+          }, ["Swap request"]),
+          el("button", {
+            onClick: () => renderHomePage(),
+            type: "button"
+          }, ["Home"]),
+          createProfilePhoto(user.imgPlaceholderInitials, 38)
+        ])
+      ]);
+      container.appendChild(topBar);
+
+      // Profile form mimic
+      const form = el("form", {onSubmit: e => {
+        e.preventDefault();
+        alert("Save password feature not implemented");
+      }}, [
+        el("div", {style: "text-align:center"}, [
+          createProfilePhoto(user.imgPlaceholderInitials, 130)
+        ]),
+        el("div", {}, [
+          el("label", {for: "name"}, ["Name"]),
+          el("input", {id: "name", type: "text", value: user.name, disabled: true}),
+        ]),
+        el("div", {}, [
+          el("label", {for: "location"}, ["Location"]),
+          el("input", {id: "location", type: "text", placeholder: "Location", value: user.location || ""}),
+        ]),
+        el("div", {}, [
+          el("label", {}, ["Skills Offered"]),
+          ...createSkillTags(user.skillsOffered)
+        ]),
+        el("div", {style: "margin-top: 0.4rem;"}, [
+          el("label", {}, ["Skills Wanted"]),
+          ...createSkillTags(user.skillsWanted)
+        ]),
+        el("div", {style: "margin-top: 0.6rem;"}, [
+          el("label", {for: "availability"}, ["Availability"]),
+          el("input", {id: "availability", type: "text", value: user.availability || "weekends"})
+        ]),
+        el("div", {style: "margin-top: 0.6rem;"}, [
+          el("label", {for: "profile"}, ["Profile"]),
+          el("input", {id: "profile", type: "text", value: user.profileVisibility || "Public"})
+        ]),
+        el("div", {style: "margin-top: 1rem; display:flex; gap:10px; justify-content: flex-start; user-select:none;"}, [
+          el("button", {type: "submit", style:"color:green; border:none; background:none; font-weight:800; cursor:pointer;"}, ["Save Password"]),
+          el("button", {
+            type: "button",
+            style:"color: #00acf0; border:none; background:none; font-weight:800; cursor:pointer;",
+            onClick: () => renderRequestList()
+          }, ["Swap request"]),
+          el("button", {
+            type: "button",
+            onClick: () => renderHomePage()
+          }, ["Home"])
+        ])
+      ]);
+      container.appendChild(form);
+
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+      app.appendChild(container);
+    }
+
+    // Screen 4: Request details page before submitting request
+    function renderRequestForm(user) {
+      selectedUser = user;
+
+      const container = el("div", {class: "sketch-border form-container"});
+
+      // Top bar
+      const topBar = el("header", {class: "top-bar"}, [
+        el("div", {}, ["Skill Swap Platform"]),
+        el("div", {class: "right-menu"}, [
+          el("button", {
+            onClick: () => renderHomePage(),
+            type: "button"
+          }, ["Home"]),
+          createProfilePhoto(loggedInUser.imgPlaceholderInitials, 38)
+        ])
+      ]);
+      container.appendChild(topBar);
+
+      // Request Form
+      const form = el("form", {onSubmit: async e => {
+        e.preventDefault();
+        const skillOffered = e.target.skillOffered.value;
+        const skillWanted = e.target.skillWanted.value;
+        const message = e.target.message.value.trim();
+
+        if (!skillOffered || !skillWanted) {
+          alert("Please choose skills offered and wanted.");
+          return;
+        }
+
+        const requestData = {
+          requestorId: loggedInUser.id,
+          requestedId: user.id,
+          skillOffered,
+          skillWanted,
+          message,
+        };
+
+        const success = await sendSwapRequest(requestData);
+        if (success) {
+          alert("Request submitted!");
+          renderHomePage();
+        }
+      }}, [
+        el("h2", {style:"font-weight:700; margin-bottom: 0.6rem;"}, [user.name]),
+        el("div", {style:"margin-bottom: 0.6rem;"}, [
+          el("label", {for: "skillOffered"}, ["Choose one of your offered skills"]),
+          el("select", {id: "skillOffered", name: "skillOffered", required: true}, [
+            el("option", {value: "", disabled: true, selected: true}, ["--Select--"]),
+            ...(loggedInUser ? loggedInUser.skillsOffered.map(skill => el("option", {value: skill}, [skill])) : [])
+          ])
+        ]),
+        el("div", {style:"margin-bottom: 0.6rem;"}, [
+          el("label", {for: "skillWanted"}, ["Choose one of their wanted skills"]),
+          el("select", {id: "skillWanted", name: "skillWanted", required: true}, [
+            el("option", {value: "", disabled: true, selected: true}, ["--Select--"]),
+            ...user.skillsWanted.map(skill => el("option", {value: skill}, [skill]))
+          ])
+        ]),
+        el("div", {style:"margin-bottom: 0.8rem;"}, [
+          el("label", {for: "message"}, ["Message"]),
+          el("textarea", {id: "message", name: "message", placeholder: "Enter message..."}),
+        ]),
+        el("div", {style:"text-align:center;"}, [
+          el("button", {type: "submit"}, ["Submit"])
+        ]),
+      ]);
+      container.appendChild(form);
+
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+      app.appendChild(container);
+    }
+
+    // Screen 6: Swap requests page (for logged-in user)
+    async function renderRequestList() {
+      if (!loggedInUser) {
+        alert("Please login to view swap requests.");
+        renderLoginPage();
+        return;
+      }
+      await fetchUserRequests(); // Ensure requests are up-to-date
+
+      const container = el("div", {class: "sketch-border"});
+
+      // Top bar
+      const topBar = el("header", {class: "top-bar"}, [
+        el("div", {}, ["Skill Swap Platform"]),
+        el("div", {class: "right-menu"}, [
+          el("button", {
+            onClick: () => renderHomePage(),
+            type: "button"
+          }, ["Home"]),
+          createProfilePhoto(loggedInUser.imgPlaceholderInitials, 38)
+        ])
+      ]);
+      container.appendChild(topBar);
+
+      // Filter & search mimic (not functional)
+      const form = el("form", {class: "flex items-center gap-2 mb-4", onSubmit: e => e.preventDefault()}, [
+        el("select", {
+          "aria-label": "Status Filter",
+          style:"min-width: 7rem"
+        }, [
+          el("option", {value: ""}, ["Pending"]),
+          el("option", {value: "accept"}, ["Accept"]),
+          el("option", {value: "reject"}, ["Rejected"])
+        ]),
+        el("input", {type: "text", placeholder: "search", "aria-label": "Search requests"}),
+        el("button", {type: "button"}, ["Search"])
+      ]);
+      container.appendChild(form);
+
+      // List requests for loggedInUser (requests made by loggedInUser)
+      const userRequests = requests.filter(r => r.requestorId === loggedInUser.id);
+
+      const listContainer = el("div", {});
+      if (userRequests.length === 0) {
+        listContainer.appendChild(el("p", {style: "color: #666; font-style: italic;"}, ["No swap requests found"]));
+      } else {
+        userRequests.forEach(rq => {
+          const requestedUser = allUsers.find(u => u.id === rq.requestedId);
+          if (!requestedUser) return;
+
+          const card = el("div", {class: "user-card"});
+          const leftContent = el("div", {class: "flex items-center"}, [
+            createProfilePhoto(requestedUser.imgPlaceholderInitials),
+            el("div", {}, [
+              el("div", {style: "font-weight: 700;"}, [requestedUser.name]),
+              el("div", {}, [
+                el("span", {class: "skill-tag-small"}, ["skills offered:"]),
+                ...requestedUser.skillsOffered.map(s => el("span", {class: "skill-tag-small"}, [s]))
+              ]),
+              el("div", {}, [
+                el("span", {class: "skill-tag-small"}, ["skills wanted:"]),
+                ...requestedUser.skillsWanted.map(s => el("span", {class: "skill-tag-small"}, [s]))
+              ]),
+            ]),
+          ]);
+
+          const rightContent = el("div", {class: "flex flex-col items-end select-none"}, [
+            el("div", {class: `status-pill status-${rq.status.toLowerCase()}`}, [
+              rq.status
+            ])
+          ]);
+          card.appendChild(leftContent);
+          card.appendChild(rightContent);
+          listContainer.appendChild(card);
+        });
+      }
+
+      container.appendChild(listContainer);
+
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+      app.appendChild(container);
+    }
+
+    // Initial render home
+    renderHomePage();
+
+  })();
+</script>
+
+</body>
+</html>
